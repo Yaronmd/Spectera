@@ -9,6 +9,7 @@ from my_hook import spectra
 def test_pass():
     assert 1 == 1
 
+@spectra.attach("This is a failed teset.")
 def test_fail():
     assert 1 == 2
 
