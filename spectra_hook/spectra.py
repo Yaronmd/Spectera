@@ -2,6 +2,7 @@ class Spectra:
     def __init__(self):
         self.attached_data = {}
         self.test_results = {"passed": [], "failed": [], "skipped": []}
+        self.start_date_and_time = None
     
     def attach(self, description):
         """Decorator to attach data to the test function and track assertions."""
@@ -16,8 +17,9 @@ class Spectra:
             test_name = func.__name__
             try:
                 result = func(*args, **kwargs)
-                self.test_results['passed'].append(test_name)
-                self.attached_data[test_name]["assertion"] = "Passed"
+                if test_name not in self.test_results['passed']:
+                    self.test_results['passed'].append(test_name)
+                    self.attached_data[test_name]["assertion"] = "Passed"
                 return result
             except AssertionError as e:
                 self.test_results['failed'].append(test_name)
@@ -40,6 +42,7 @@ class Spectra:
         with open("test_report.html", "w") as f:
             f.write("<html><body>\n")
             f.write("<h1>Test Session Summary</h1>\n")
+            f.write(f"<h2>{self.start_date_and_time}</h2>\n")
             f.write(f"<p>Duration: {session.duration:.2f} seconds</p>\n")
             f.write(f"<p>Exit status: {session.exitstatus}</p>\n")
 
