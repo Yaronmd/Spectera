@@ -17,9 +17,8 @@ class Spectra:
             test_name = func.__name__
             try:
                 result = func(*args, **kwargs)
-                if test_name not in self.test_results['passed']:
-                    self.test_results['passed'].append(test_name)
-                    self.attached_data[test_name]["assertion"] = "Passed"
+                self.test_results['passed'].append(test_name)
+                self.attached_data[test_name]["assertion"] = "Passed"
                 return result
             except AssertionError as e:
                 self.test_results['failed'].append(test_name)

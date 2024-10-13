@@ -31,9 +31,9 @@ def pytest_runtest_logreport(report):
         if report.passed and function_name not in spectra.test_results['passed']:
             spectra.test_results['passed'].append(function_name)
             print(f"{function_name} PASSED")
-        elif report.failed:
-            spectra.test_results['failed'].append(function_name)
+        elif report.failed and function_name not in spectra.test_results['failed']:
+            spectra.test_results['failed'].append(function_name) 
             print(f"{function_name} FAILED")
-        elif report.skipped:
+        elif report.skipped and function_name not in spectra.test_results['skipped']:
             spectra.test_results['skipped'].append(function_name)
             print(f"{function_name} SKIPPED")
