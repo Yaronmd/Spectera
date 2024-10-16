@@ -1,8 +1,12 @@
+from typing import Optional
+
+
 class Spectra:
-    def __init__(self):
+    def __init__(self,title:Optional[str]):
         self.attached_data = {}
         self.test_results = {"passed": [], "failed": [], "skipped": []}
         self.start_date_and_time = None
+        self.title = f"{title}" if title else "Test Result"
     
     def attach(self, description):
         """Decorator to attach data to the test function and track assertions."""
@@ -48,10 +52,11 @@ class Spectra:
 
             f.write(head)
             f.write("<html><body>\n")
-            f.write("<h1>Test Session Summary</h1>\n")
-            f.write(f"<h2>{self.start_date_and_time}</h2>\n")
-            f.write(f"<p>Duration: {session.duration:.2f} seconds</p>\n")
-            f.write(f"<p>Exit status: {session.exitstatus}</p>\n")
+            f.write("<div class='intro'>")
+            f.write(f"<h1>{self.title}</h1>\n")
+            f.write(f"<h2>Test Session Summary </h2>\n")
+            f.write(f"<h2>{self.start_date_and_time}, Duration: {session.duration:.2f} seconds, Exit status: {session.exitstatus}</h2>\n")
+            f.write("</div>")
 
             f.write("<h2>Passed Tests</h2>\n")
             f.write("<ul>\n")

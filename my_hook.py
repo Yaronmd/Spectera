@@ -2,12 +2,12 @@ import pytest # type: ignore
 from spectra_hook.spectra import Spectra
 import time
 from datetime import datetime
-spectra = Spectra()
+spectra = Spectra(title="Spectra project")
 
 @pytest.hookimpl(tryfirst=True)
 def pytest_sessionstart(session):
     """Called after the Session object has been created and before performing collection."""
-    spectra.start_date_and_time = datetime.now()
+    spectra.start_date_and_time = datetime.now().strftime("%d-%m-%y %H:%M:%S")
     session.start_time = time.time()
     session.results = spectra.test_results
     print("\nStarting test session...")
