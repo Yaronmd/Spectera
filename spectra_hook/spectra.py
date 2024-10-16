@@ -39,6 +39,14 @@ class Spectra:
     def generate_html_report(self, session):
         """Generate an HTML report for the test session."""
         with open("test_report.html", "w") as f:
+            head = """<head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Test Report</title>
+            <link rel="stylesheet" href="styles.css">
+            </head>"""
+
+            f.write(head)
             f.write("<html><body>\n")
             f.write("<h1>Test Session Summary</h1>\n")
             f.write(f"<h2>{self.start_date_and_time}</h2>\n")
