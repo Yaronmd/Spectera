@@ -1,5 +1,5 @@
 from typing import Optional
-
+import time
 
 class Spectra:
     def __init__(self,title:Optional[str]):
@@ -7,7 +7,19 @@ class Spectra:
         self.test_results = {"passed": [], "failed": [], "skipped": []}
         self.start_date_and_time = None
         self.title = f"{title}" if title else "Test Result"
-    
+        self.start_session = None
+
+    def set_start_session(self):
+        self.start_session = time.time()
+
+    def set_duration(self):
+        if self.start_session:
+            self.end_session = time.time() - self.start_session
+            print(f"\nTest session finished. Duration: {self.end_session:.2f} seconds")
+
+    def set_exit_status(self,exit_status):
+        self.exit_status = exit_status
+        
     def attach(self, description):
         """Decorator to attach data to the test function and track assertions."""
         def decorator(func):
@@ -33,14 +45,67 @@ class Spectra:
                 self.attached_data[test_name]["assertion"] = f"Error: {str(e)}"
                 raise e  # Re-raise to ensure pytest captures the failure
         return wrapper
+    
+    def __parse_tests_to_html(self, status, collapsible_class):
+        if not self.test_results[status]:
+            return ""
+        
+        # Create the button with the correct status (passed/failed) and class (green/red)
+        html_result = f"<button type='button' class='collapsible {collapsible_class}'>{status.capitalize()} tests</button>\n"
+        rows = ""
+        description = ""
 
-    # def attach_assertion(self, func_name, assertion_value):
-    #     """Attach the assertion value to the specified function."""
-    #     if func_name in self.attached_data:
-    #         self.attached_data[func_name]["assertion"] = assertion_value
+        for test in self.test_results[status]:
+            if test in self.attached_data.keys():
+                # If description is a string, add it directly
+                if isinstance(self.attached_data[test]['description'], str):
+                    rows += f"<li>{test}: {self.attached_data[test]['description']}</li>\n"
+                
+                # If description is a list, format it as a nested <ul>
+                elif isinstance(self.attached_data[test]['description'], list):
+                    description = "<ul>\n" + "\n".join(f"<li>{i+1}.{item}</li>\n" for i, item in enumerate(self.attached_data[test]['description'])) + "\n</ul>\n"
+                    rows += f"<li>{test}: {description}</li>\n"
+            else:
+                # If no attached data, just show the test name
+                rows += f"<li>{test}</li>\n"
+
+        # Wrap the results inside a collapsible content div
+        html_result += f"<div class='content'>\n<ul>{rows}</ul>\n</div>\n"
+        return html_result
+ 
+
+    def __parse_passed_to_html(self):
+        return self.__parse_tests_to_html(collapsible_class="green",status="passed")
+
+    def __parse_fail_to_html(self):
+       return self.__parse_tests_to_html(collapsible_class="red",status="failed")
+
+    def __parse_skip_to_html(self):
+        return self.__parse_tests_to_html(collapsible_class="yellow",status="skipped")
+    
+    def generate_html_report(self):
 
 
-    def generate_html_report(self, session):
+        def add_collepse_script():
+            return """
+            <script>
+            var coll = document.getElementsByClassName("collapsible");
+                var i;
+                for (i = 0; i < coll.length; i++) {
+                coll[i].addEventListener("click", function() {
+                    this.classList.toggle("active");
+                    var content = this.nextElementSibling;
+                    if (content.style.display === "block") {
+                    content.style.display = "none";
+                    } else {
+                    content.style.display = "block";
+                    }
+                });
+                }
+            </script>
+            """
+
+
         """Generate an HTML report for the test session."""
         with open("test_report.html", "w") as f:
             head = """<head>
@@ -55,34 +120,11 @@ class Spectra:
             f.write("<div class='intro'>")
             f.write(f"<h1>{self.title}</h1>\n")
             f.write(f"<h2>Test Session Summary </h2>\n")
-            f.write(f"<h2>{self.start_date_and_time}, Duration: {session.duration:.2f} seconds, Exit status: {session.exitstatus}</h2>\n")
+            f.write(f"<h2>{self.start_date_and_time}, Duration: {self.end_session:.2f} seconds, Exit status: {self.exit_status}</h2>\n")
             f.write("</div>")
-
-            f.write("<h2>Passed Tests</h2>\n")
-            f.write("<ul>\n")
-            for test in self.test_results['passed']:
-                if test in self.attached_data.keys():
-                    f.write(f"<li>{test}: {self.attached_data[test]['description']}, Assertion: {self.attached_data[test]['assertion']}</li>\n")
-                else:
-                    f.write(f"<li>{test}</li>")
+            f.write(self.__parse_passed_to_html())
+            f.write(self.__parse_fail_to_html())
+            f.write(self.__parse_skip_to_html())
             f.write("</ul>\n")
-
-            f.write("<h2>Failed Tests</h2>\n")
-            f.write("<ul>\n")
-            for test in self.test_results['failed']:
-                if test in self.attached_data.keys():
-                    f.write(f"<li>{test}: {self.attached_data[test]['description']}, Assertion: {self.attached_data[test]['assertion']}</li>\n")
-                else:
-                    f.write(f"<li>{test}</li>")
-            f.write("</ul>\n")
-
-            f.write("<h2>Skipped Tests</h2>\n")
-            f.write("<ul>\n")
-            for test in self.test_results['skipped']:
-                if test in self.attached_data.keys():
-                    f.write(f"<li>{test}: {self.attached_data[test]['description']}, Assertion: {self.attached_data[test]['assertion']}</li>\n")
-                else:
-                    f.write(f"<li>{test}</li>")
-            f.write("</ul>\n")
-
+            f.write(add_collepse_script())
             f.write("</body></html>\n")

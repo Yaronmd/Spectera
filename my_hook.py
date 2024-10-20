@@ -8,20 +8,19 @@ spectra = Spectra(title="Spectra project")
 def pytest_sessionstart(session):
     """Called after the Session object has been created and before performing collection."""
     spectra.start_date_and_time = datetime.now().strftime("%d-%m-%y %H:%M:%S")
-    session.start_time = time.time()
+    spectra.set_start_session()
     session.results = spectra.test_results
     print("\nStarting test session...")
 
 @pytest.hookimpl(tryfirst=True)
 def pytest_sessionfinish(session, exitstatus):
     """Called after the whole test run finished, right before returning the exit status."""
-    session.duration = time.time() - session.start_time
-    session.exitstatus = exitstatus
-    print(f"\nTest session finished. Duration: {session.duration:.2f} seconds")
+    spectra.set_duration()
+    spectra.set_exit_status(exit_status=exitstatus)
     print(f"Exit status: {exitstatus}")
 
     # Generate HTML report
-    spectra.generate_html_report(session)
+    spectra.generate_html_report()
 
 @pytest.hookimpl(tryfirst=True)
 def pytest_runtest_logreport(report):

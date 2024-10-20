@@ -6,16 +6,43 @@
             </head><html><body>
 <div class='intro'><h1>Spectra project</h1>
 <h2>Test Session Summary </h2>
-<h2>16-10-24 23:42:42, Duration: 0.01 seconds, Exit status: 1</h2>
-</div><h2>Passed Tests</h2>
-<ul>
-<li>test_pass: This is a passing teset., Assertion: Passed</li>
+<h2>20-10-24 23:30:30, Duration: 0.01 seconds, Exit status: 1</h2>
+</div><button type='button' class='collapsible green'>Passed tests</button>
+<div class='content'>
+<ul><li>test_pass: <ul>
+<li>1.This is a passing test.</li>
+
+<li>2.step 1</li>
+
 </ul>
-<h2>Failed Tests</h2>
-<ul>
-<li>test_fail: This is a failed teset., Assertion: assert 1 == 2</li>
+</li>
 </ul>
-<h2>Skipped Tests</h2>
-<ul>
-<li>test_skip</li></ul>
-</body></html>
+</div>
+<button type='button' class='collapsible red'>Failed tests</button>
+<div class='content'>
+<ul><li>test_fail: This is a failed teset.</li>
+</ul>
+</div>
+<button type='button' class='collapsible yellow'>Skipped tests</button>
+<div class='content'>
+<ul><li>test_skip</li>
+</ul>
+</div>
+</ul>
+
+            <script>
+            var coll = document.getElementsByClassName("collapsible");
+                var i;
+                for (i = 0; i < coll.length; i++) {
+                coll[i].addEventListener("click", function() {
+                    this.classList.toggle("active");
+                    var content = this.nextElementSibling;
+                    if (content.style.display === "block") {
+                    content.style.display = "none";
+                    } else {
+                    content.style.display = "block";
+                    }
+                });
+                }
+            </script>
+            </body></html>

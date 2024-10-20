@@ -5,7 +5,7 @@ import os
 
 from my_hook import spectra 
 
-@spectra.attach("This is a passing teset.")
+@spectra.attach(["This is a passing test.","step 1"])
 def test_pass():
     assert 1 == 1
 
