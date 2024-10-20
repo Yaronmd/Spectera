@@ -1,0 +1,70 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+}
+
+.intro {
+    color: #333;
+    text-align: left;
+}
+
+.result {
+    margin: 20px;
+    padding: 20px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Base collapsible style */
+.collapsible {
+    color: #444;
+    cursor: pointer;
+    padding: 18px;
+    width: 50%;
+    border: none;
+    text-align: left;
+    outline: none;
+    font-size: 15px;
+    font-weight: bold;
+    font-family:sans-serif
+}
+
+/* Green collapsible */
+.collapsible.green {
+    background-color: #0ad34a;
+}
+
+.collapsible.green.active, .collapsible.green:hover {
+    background-color: #089c37;
+}
+
+/* Red collapsible */
+.collapsible.red {
+    background-color: #d33a0a;
+}
+
+.collapsible.red.active, .collapsible.red:hover {
+    background-color: #9c3708;
+}
+
+/* Yellow collapsible */
+.collapsible.yellow {
+    background-color: #f1c40f;
+}
+
+.collapsible.yellow.active, .collapsible.yellow:hover {
+    background-color: #d4ac0d;
+}
+
+/* Content inside collapsible */
+.content {
+    padding: 0 18px;
+    display: none;
+    overflow: hidden;
+    background-color: #f1f1f1;
+}
+  
