@@ -34,7 +34,7 @@ class Spectra:
             try:
                 result = func(*args, **kwargs)
                 self.test_results['passed'].append(test_name)
-                self.attached_data[test_name]["assertion"] = "Passed"
+                self.attached_data[test_name]["assertion"] = ""
                 return result
             except AssertionError as e:
                 self.test_results['failed'].append(test_name)
@@ -54,17 +54,22 @@ class Spectra:
         html_result = f"<button type='button' class='collapsible {collapsible_class}'>{status.capitalize()} tests</button>\n"
         rows = ""
         description = ""
-
+        assert_str = ""
         for test in self.test_results[status]:
             if test in self.attached_data.keys():
                 # If description is a string, add it directly
                 if isinstance(self.attached_data[test]['description'], str):
-                    rows += f"<li>{test}: {self.attached_data[test]['description']}</li>\n"
+                    if self.attached_data[test]["assertion"]:
+                        assert_str = self.attached_data[test]["assertion"]
+                    rows += f"<li>{test}: {description}<ul>\n {'Assertion:'+assert_str if assert_str else ""}</ul></li>\n"
+                    
                 
                 # If description is a list, format it as a nested <ul>
                 elif isinstance(self.attached_data[test]['description'], list):
-                    description = "<ul>\n" + "\n".join(f"<li>{i+1}.{item}</li>\n" for i, item in enumerate(self.attached_data[test]['description'])) + "\n</ul>\n"
-                    rows += f"<li>{test}: {description}</li>\n"
+                    if self.attached_data[test]["assertion"]:
+                        assert_str = self.attached_data[test]["assertion"]
+                    description = "<p>Test body</p> <ol type='1'>\n" + "\n".join(f"<li>{item}</li>\n" for i, item in enumerate(self.attached_data[test]['description'])) + "\n</ol>\n"
+                    rows += f"<li>{test}: {description} {'Assertion:'+assert_str if assert_str else ""}</li>\n"
             else:
                 # If no attached data, just show the test name
                 rows += f"<li>{test}</li>\n"
@@ -87,24 +92,8 @@ class Spectra:
 
 
         def add_collepse_script():
-            return """
-            <script>
-            var coll = document.getElementsByClassName("collapsible");
-                var i;
-                for (i = 0; i < coll.length; i++) {
-                coll[i].addEventListener("click", function() {
-                    this.classList.toggle("active");
-                    var content = this.nextElementSibling;
-                    if (content.style.display === "block") {
-                    content.style.display = "none";
-                    } else {
-                    content.style.display = "block";
-                    }
-                });
-                }
-            </script>
-            """
-
+            return """<script src="spectra_hook/scripts/collepse_script.js"></script>"""
+        
 
         """Generate an HTML report for the test session."""
         with open("test_report.html", "w") as f:
@@ -116,7 +105,7 @@ class Spectra:
             </head>"""
 
             f.write(head)
-            f.write("<html><body>\n")
+            f.write("<html>\n<body>\n")
             f.write("<div class='intro'>")
             f.write(f"<h1>{self.title}</h1>\n")
             f.write(f"<h2>Test Session Summary </h2>\n")
@@ -125,6 +114,5 @@ class Spectra:
             f.write(self.__parse_passed_to_html())
             f.write(self.__parse_fail_to_html())
             f.write(self.__parse_skip_to_html())
-            f.write("</ul>\n")
             f.write(add_collepse_script())
-            f.write("</body></html>\n")
+            f.write("\n</body>\n</html>\n")
